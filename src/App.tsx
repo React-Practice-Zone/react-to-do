@@ -1,12 +1,40 @@
 import { useState } from "react";
+
+import type { Todo } from "./todo.type";
 import "./style.css";
 
 export default function App() {
   const [newItem, setNewItem] = useState("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  function handleSubmit(e: Event) {
+    e.preventDefault();
+
+    setTodos((currentTodos) => {
+      return [
+        ...currentTodos,
+        { id: crypto.randomUUID(), title: newItem, completed: false },
+      ];
+    });
+
+    setNewItem("");
+  }
+
+  function toggleTodo(id: string, completed: boolean) {
+    setTodos((currentTodos) => {
+      return currentTodos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, completed };
+        }
+
+        return todo;
+      });
+    });
+  }
 
   return (
     <>
-      <form className="new-item-form">
+      <form onSubmit={handleSubmit} className="new-item-form">
         <div className="form-row">
           <label htmlFor="item">New Item</label>
           <input
@@ -18,29 +46,24 @@ export default function App() {
         </div>
         <button className="btn">Add</button>
       </form>
+
       <h1 className="header">Todo List</h1>
+
       <ul className="list">
-        <li className="list-item">
-          <label htmlFor="checkbox-1">
-            <input type="checkbox" name="checkbox" id="checkbox-1" />
-            Item 1
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
-        <li className="list-item">
-          <label htmlFor="checkbox-2">
-            <input type="checkbox" name="checkbox" id="checkbox-2" />
-            Item 2
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
-        <li className="list-item">
-          <label htmlFor="checkbox-3">
-            <input type="checkbox" name="checkbox" id="checkbox-3" />
-            Item 3
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
+        {todos.map((todo: Todo) => {
+          return (
+            <li key={todo.id} className="list-item">
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={(e) => toggleTodo(todo.id, e.target.checked)}
+                />
+                {todo.title}
+              </label>
+              <button className="btn btn-danger">Delete</button>
+            </li>
+          );
+        })}
       </ul>
     </>
   );
