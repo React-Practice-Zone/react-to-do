@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import "./style.css";
 import type { Todo } from "./todo.type";
-import { TodoForm } from "./components/todoForm.component";
+import { TodoForm } from "./components/todo-form.component";
+import { List } from "./components/list.component";
 
 export default function App() {
   const [newItem, setNewItem] = useState("");
@@ -52,31 +53,7 @@ export default function App() {
     <>
       <TodoForm onSubmit={addTodo} />
       <h1 className="header">Todo List</h1>
-
-      <ul className="list">
-        {todos.length === 0 && (
-          <div className="list-item">No items in your todo list</div>
-        )}
-        {todos.map((todo: Todo) => {
-          return (
-            <li key={todo.id} className="list-item">
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => toggleTodo(todo.id, e.target.checked)}
-                />
-                {todo.title}
-              </label>
-              <button
-                className="btn btn-danger"
-                onClick={() => deleteTodo(todo.id)}
-              >
-                Delete
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <List todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
     </>
   );
 }
