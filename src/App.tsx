@@ -1,11 +1,21 @@
 import { useState } from "react";
 
-import type { Todo } from "./todo.type";
 import "./style.css";
+import type { Todo } from "./todo.type";
+import { TodoForm } from "./components/todoForm.component";
 
 export default function App() {
   const [newItem, setNewItem] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
+
+  function addTodo(title: string) {
+    setTodos((currentTodos) => {
+      return [
+        ...currentTodos,
+        { id: crypto.randomUUID(), title, completed: false },
+      ];
+    });
+  }
 
   function handleSubmit(e: Event) {
     e.preventDefault();
@@ -40,22 +50,13 @@ export default function App() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          <label htmlFor="item">New Item</label>
-          <input
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            type="text"
-            id="item"
-          />
-        </div>
-        <button className="btn">Add</button>
-      </form>
-
+      <TodoForm onSubmit={addTodo} />
       <h1 className="header">Todo List</h1>
 
       <ul className="list">
+        {todos.length === 0 && (
+          <div className="list-item">No items in your todo list</div>
+        )}
         {todos.map((todo: Todo) => {
           return (
             <li key={todo.id} className="list-item">
