@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./style.css";
 import type { Todo } from "./todo.type";
@@ -6,8 +6,20 @@ import { TodoForm } from "./components/todo-form.component";
 import { List } from "./components/list.component";
 
 export default function App() {
+  // ! Hooks in React essentially have to be called at the top level of a component.
+
   const [newItem, setNewItem] = useState("");
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const localValue = localStorage.getItem("todos");
+
+    if (localValue === null) return [];
+
+    return JSON.parse(localValue) as Todo[];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   function addTodo(title: string) {
     setTodos((currentTodos) => {
